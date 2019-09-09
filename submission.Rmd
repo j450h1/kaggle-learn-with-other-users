@@ -4,10 +4,107 @@ output: html_notebook
 ---
 
 ```{python}
+import pandas as pd
+from pathlib import Path
 
+file_to_open = Path.cwd() / "train.csv.zip"
+
+df = pd.read_csv(file_to_open)
+
+df.head()
 ```
 
 ```{python}
+df.columns
+```
 
+* Eda
+
+```{python}
+df['Cover_Type'].unique() 
+```
+
+
+
+```{python}
+df.groupby('Cover_Type')['Id'].count()
+```
+
+
+```{python}
+len(df)/7
+```
+
+* Check for missing data
+
+```{python}
+df.columns[df.isnull().any()]
+```
+
+# Elevation
+```{python}
+df['Elevation'].hist()
+```
+
+```{python}
+df['Elevation'].plot.box()
+```
+
+```{python}
+df.boxplot(column=['Elevation'], by=['Cover_Type'])
+```
+
+```{python}
+df.boxplot(column=['Aspect'], by=['Cover_Type'])
+```
+
+```{python}
+df.boxplot(column=['Slope'], by=['Cover_Type'])
+```
+
+```{python}
+df.boxplot(column=['Horizontal_Distance_To_Hydrology'], by=['Cover_Type'])
+```
+
+```{python}
+df.boxplot(column=['Vertical_Distance_To_Hydrology'], by=['Cover_Type'])
+```
+
+```{python}
+from statsmodels.graphics.mosaicplot import mosaic
+plt.rcParams['font.size'] = 16.0
+mosaic(df, ['Soil_Type1', 'Cover_Type']);
+```
+
+```{python}
+import seaborn as sns
+sns.catplot(x="Cover_Type", y="Soil_Type1", hue="class", kind="bar", data=df)
+```
+
+```{python}
+# toy data
+titanic = sns.load_dataset("titanic")
+sns.catplot(x="sex", y="survived", hue="class", kind="bar", data=titanic);
+```
+
+```{python}
+import seaborn as sns
+sns.set(style="darkgrid")
+ax = sns.countplot(x="Soil_Type1", data=df)
+ax
+```
+
+```{python}
+ax = sns.countplot(x="Cover_Type", hue="Soil_Type1", data=df); ax
+```
+
+```{python}
+ax = sns.countplot(x="Cover_Type", hue="Wilderness_Area1", data=df); ax
+```
+
+# Horizontally
+
+```{python}
+ax = sns.countplot(y="Cover_Type", hue="Wilderness_Area1", data=df); ax
 ```
 
