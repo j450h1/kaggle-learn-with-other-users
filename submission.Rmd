@@ -21,6 +21,11 @@ df.columns
 * Eda
 
 ```{python}
+df.shape
+```
+
+
+```{python}
 df['Cover_Type'].unique() 
 ```
 
@@ -108,3 +113,34 @@ ax = sns.countplot(x="Cover_Type", hue="Wilderness_Area1", data=df); ax
 ax = sns.countplot(y="Cover_Type", hue="Wilderness_Area1", data=df); ax
 ```
 
+```{zsh}
+ls
+```
+
+# Modeling
+
+* Is there class imbalance?
+
+```{python}
+df['Cover_Type'].value_counts()
+```
+
+```{python}
+# Import KFold
+from sklearn.model_selection import KFold
+
+# Create a KFold object
+kf = KFold(n_splits=5, shuffle=True, random_state=123)
+
+# Loop through each split
+fold = 0
+for train_index, test_index in kf.split(df):
+    # Obtain training and testing folds
+    cv_train, cv_test = df.iloc[train_index], df.iloc[test_index]
+    print('Fold: {}'.format(fold))
+    print('CV train shape: {}'.format(cv_train.shape))
+    print('Cover Type = 5 in CV train: {}\n'.format(sum(cv_train.Cover_Type == 5))) # no need for Stratified since no class imbalance
+    fold += 1
+```
+
+# Start with Logistic Regression
