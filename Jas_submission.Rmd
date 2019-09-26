@@ -204,7 +204,7 @@ submission1['Cover_Type'] = 1
 * Write to csv
 
 ```{python}
-submission1.to_csv('submission1.csv')
+submission1[['Id','Cover_Type']].to_csv('submission1.csv')
 ```
 
 * I submitted using command-line tool as such:
