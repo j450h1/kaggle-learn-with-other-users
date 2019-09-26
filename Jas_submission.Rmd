@@ -214,7 +214,7 @@ kaggle competitions submit learn-together -f submission1.csv -m "My first submis
 ```
 
 ```{bash, eval = FALSE}
-# to check that the submissions were successfull or nto
+# to check that the submissions were successfull or not
 kaggle competitions submissions learn-together
 ```
 
