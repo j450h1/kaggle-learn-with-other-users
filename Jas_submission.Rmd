@@ -204,7 +204,7 @@ submission1['Cover_Type'] = 1
 * Write to csv
 
 ```{python}
-submission1[['Id','Cover_Type']].to_csv('submission1.csv')
+submission1[['Id','Cover_Type']].to_csv('submission1.csv', index=False)
 ```
 
 * I submitted using command-line tool as such:
@@ -213,6 +213,10 @@ submission1[['Id','Cover_Type']].to_csv('submission1.csv')
 kaggle competitions submit learn-together -f submission1.csv -m "My first submission for this contest. Just a baseline with all predictions of the 1st class of Cover_Type"
 ```
 
+```{bash, eval = FALSE}
+# to check that the submissions were successfull or nto
+kaggle competitions submissions learn-together
+```
 
 # Next with Logistic Regression
 
