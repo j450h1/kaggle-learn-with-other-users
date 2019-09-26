@@ -6,7 +6,11 @@ output: html_notebook
 ```{python}
 import pandas as pd
 from pathlib import Path
+import matplotlib.pyplot as plt #needed to display in Rmarkdown document
+import seaborn as sns
+```
 
+```{python}
 # no need to unzip
 file_to_open = Path.cwd() / "train.csv.zip"
 
@@ -52,31 +56,44 @@ df.columns[df.isnull().any()]
 # Elevation
 ```{python}
 df['Elevation'].hist()
+plt.show() #needed to display in Rmarkdown document
 ```
 
 ```{python}
 df['Elevation'].plot.box()
+plt.show()
 ```
 
 ```{python}
 df.boxplot(column=['Elevation'], by=['Cover_Type'])
+plt.show()
 ```
+
+* Seems quite different across classes so a good candidate to be part of the model
 
 ```{python}
 df.boxplot(column=['Aspect'], by=['Cover_Type'])
+plt.show()
 ```
+
+* Somewhat different, but not as much
 
 ```{python}
 df.boxplot(column=['Slope'], by=['Cover_Type'])
+plt.show()
 ```
 
 ```{python}
 df.boxplot(column=['Horizontal_Distance_To_Hydrology'], by=['Cover_Type'])
+plt.show()
 ```
 
 ```{python}
 df.boxplot(column=['Vertical_Distance_To_Hydrology'], by=['Cover_Type'])
+plt.show()
 ```
+
+* Not very different distributions
 
 ```{python}
 from statsmodels.graphics.mosaicplot import mosaic
@@ -84,38 +101,49 @@ plt.rcParams['font.size'] = 16.0
 mosaic(df, ['Soil_Type1', 'Cover_Type']);
 ```
 
+
 ```{python}
 import seaborn as sns
-sns.catplot(x="Cover_Type", y="Soil_Type1", hue="class", kind="bar", data=df)
+sns.catplot(x="Cover_Type", y="Soil_Type1", hue="Cover_Type", kind="bar", data=df)
+plt.show()
+```
+```{python}
+sns.violinplot(x="Cover_Type", y="Soil_Type1", hue="Cover_Type", data=df)
+plt.show()
 ```
 
 ```{python}
 # toy data
 titanic = sns.load_dataset("titanic")
-sns.catplot(x="sex", y="survived", hue="class", kind="bar", data=titanic);
+sns.catplot(x="sex", y="survived", hue="class", kind="bar", data=titanic)
+plt.show()
 ```
 
 ```{python}
-import seaborn as sns
 sns.set(style="darkgrid")
 ax = sns.countplot(x="Soil_Type1", data=df)
-ax
+plt.show()
 ```
 
 ```{python}
 ax = sns.countplot(x="Cover_Type", hue="Soil_Type1", data=df); ax
+plt.show()
 ```
+
+* Soil_Type seems to be quite different
 
 ```{python}
 ax = sns.countplot(x="Cover_Type", hue="Wilderness_Area1", data=df); ax
+plt.show()
 ```
 
 # Horizontally
 
 ```{python}
 ax = sns.countplot(y="Cover_Type", hue="Wilderness_Area1", data=df); ax
+plt.show()
 ```
-
+* below currently only works on mac
 ```{zsh}
 ls
 ```
@@ -146,4 +174,45 @@ for train_index, test_index in kf.split(df):
     fold += 1
 ```
 
-# Start with Logistic Regression
+# Modeling
+
+# Submission #1
+
+* Baseline model - assign each to Cover_Type = 1
+
+* Just to get familiar with the submission process
+
+* Read in test file
+```{python}
+file_to_open = Path.cwd() / "test.csv.zip"
+
+test = pd.read_csv(file_to_open)
+
+test.head()
+```
+
+* 55 columns instead of 56 like in the train set
+
+```{python}
+submission1 = test.copy()
+```
+
+```{python}
+submission1['Cover_Type'] = 1
+```
+
+* Write to csv
+
+```{python}
+submission1.to_csv('submission1.csv')
+```
+
+* I submitted using command-line tool as such:
+```{bash, eval = FALSE}
+#kaggle competitions submit favorita-grocery-sales-forecasting -f sample_submission_favorita.csv.7z -m "My submission message"
+kaggle competitions submit learn-together -f submission1.csv -m "My first submission for this contest. Just a baseline with all predictions of the 1st class of Cover_Type"
+```
+
+
+# Next with Logistic Regression
+
