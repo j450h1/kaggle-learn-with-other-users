@@ -1,0 +1,92 @@
+---
+title: "submission2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Next with Logistic Regression and 1 feature with basic train test split
+
+```{python}
+import pandas as pd
+from pathlib import Path
+from sklearn.model_selection import train_test_split
+```
+
+```{python}
+# no need to unzip
+test = pd.read_csv(Path.cwd() / "test.csv.zip")
+train = pd.read_csv(Path.cwd() / "train.csv.zip")
+
+train.head()
+```
+
+```{python}
+# Create local validation
+validation_train, validation_test = train_test_split(train, test_size=0.3, random_state=123)
+```
+
+
+```{python}
+print(validation_train.columns)
+```
+
+# Elevation measure had quite different distributions per each class so we should start with just this one
+
+```{python}
+features_selected = ['Elevation'] #x
+target = ['Cover_Type'] #y
+X_train = validation_train[features_selected]
+y_train = validation_train[target]
+X_test = validation_test[features_selected]
+y_test = validation_test[target] #switch to all 4 in one as shown elsewhere
+```
+
+
+```{python}
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
+model.fit(X_train, y_train)
+```
+# Predicted
+```{python}
+model.predict(X_test)
+```
+
+# Actuals
+
+```{python}
+y_test.head()
+```
+
+```{python}
+model.score(X_train, y_train)
+```
+
+* This should be the validation accuracy we are looking for
+```{python}
+model.score(X_test, y_test)
+```
+
+* Apply predictions to actual test data
+```{python}
+submission2 = test.copy()
+```
+
+```{python}
+submission2['Cover_Type'] = model.predict(submission2[features_selected])
+```
+
+* Write to csv
+
+```{python}
+submission2[['Id','Cover_Type']].to_csv('submission2.csv', index=False)
+```
+
+```{bash, eval = FALSE}
+#kaggle competitions submit favorita-grocery-sales-forecasting -f sample_submission_favorita.csv.7z -m "My submission message"
+kaggle competitions submit learn-together -f submission2.csv -m "My second submission using test/train split and Logistic Regresion with 1 feature"
+```
+
