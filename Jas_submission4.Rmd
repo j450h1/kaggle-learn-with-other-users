@@ -1,5 +1,5 @@
 ---
-title: "Jas_submission3"
+title: "Jas_submission4"
 author: "Jas Sohi"
 date: "10/14/2019"
 output: html_document
@@ -86,10 +86,12 @@ for cols in X.columns.tolist()[1:]:
 data
 ```
 
+# Top 3 features now
+
 ```{python}
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_classif
-selector = SelectKBest(f_classif, k=5)
+selector = SelectKBest(f_classif, k=3)
 X_new = selector.fit_transform(X, y)
 X_new.shape
 ```
@@ -154,20 +156,26 @@ model.score(X_test, y_test)
 
 * Apply predictions to actual test data
 ```{python}
-submission3 = test.copy()
+submission4 = test.copy()
 ```
 
 ```{python}
-submission3['Cover_Type'] = model.predict(submission3[features_selected])
+submission4['Cover_Type'] = model.predict(submission4[features_selected])
 ```
 
 * Write to csv
 
 ```{python}
-submission3[['Id','Cover_Type']].to_csv('submission3.csv', index=False)
+submission4[['Id','Cover_Type']].to_csv('submission4.csv', index=False)
 ```
 
-```{bassh, eval = FALSE}
+```{bash, eval = FALSE}
 #kaggle competitions submit favorita-grocery-sales-forecasting -f sample_submission_favorita.csv.7z -m "My submission message"
-kaggle competitions submit learn-together -f submission3.csv -m "My third submission using test/train split and Logistic Regresion with 5 features"
+kaggle competitions submit learn-together -f submission4.csv -m "My 4th submission using test/train split and Logistic Regresion with 3 features"
 ```
+
+```{bash, eval=FALSE}
+# List the submissions to see if they are successful
+kaggle competitions submissions learn-together
+```
+
