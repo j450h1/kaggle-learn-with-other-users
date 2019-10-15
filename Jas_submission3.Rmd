@@ -1,0 +1,69 @@
+---
+title: "Jas_submission3"
+author: "Jas Sohi"
+date: "10/14/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Next with Logistic Regression and top 5 features with basic train test split
+
+```{python}
+import pandas as pd
+from pathlib import Path
+from sklearn.model_selection import train_test_split
+```
+
+```{python}
+# no need to unzip
+test = pd.read_csv(Path.cwd() / "test.csv.zip")
+train = pd.read_csv(Path.cwd() / "train.csv.zip")
+
+train.head()
+```
+
+```{python}
+train.columns
+```
+
+# We can actually use ALL train data
+
+```{python}
+X = train.drop(['Id', 'Cover_Type'], axis=1)
+y = train['Cover_Type']
+```
+
+```{python}
+X.head()
+y.head()
+```
+
+
+# RFECV
+
+* To find the optimal number of features cross-validation is used with RFE to score different feature subsets and select the best scoring collection of features. Cross-validation refers to splitting up your data into multiple train and test sets so you use as much as the data as possible and are able to ensure your results will generalize to new unseen data.
+
+```{python}
+from sklearn import linear_model
+from sklearn.model_selection import StratifiedKFold #old import got deprecated
+from sklearn.feature_selection import RFECV
+
+logreg = linear_model.LogisticRegression()
+#Use RFECV to pick best features, using Stratified Kfold
+rfecv = RFECV(estimator=logreg, cv=StratifiedKFold(3), scoring='roc_auc')
+rfecv.fit(X, y)
+```
+
+```{python}
+import matplotlib.pyplot as plt
+plt.figure()
+plt.title('Logistic Regression CV score vs No of Features')
+plt.xlabel("Number of features selected")
+plt.ylabel("Cross validation score (nb of correct classifications)")
+plt.plot(range(1, len(rfecv.grid_scores_) + 1), rfecv.grid_scores_)
+plt.show()
+```
+
