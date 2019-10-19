@@ -3,5 +3,5 @@ In this competition you’ll predict what types of trees there are in an area ba
 
 # Collaborators
 
-Jas Sohi (j450h1)
-Abhishek Farande (AbhishekFarande)
+* Jas Sohi (j450h1)
+* Abhishek Farande (AbhishekFarande)
