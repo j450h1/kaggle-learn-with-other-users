@@ -1,0 +1,98 @@
+---
+title: "Submission 5"
+author: "Jas Sohi"
+date: "10/20/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Decision Trees
+
+https://www.datacamp.com/community/tutorials/decision-tree-classification-python
+
+```{python}
+import pandas as pd
+from pathlib import Path
+from sklearn.model_selection import train_test_split
+```
+
+```{python}
+# no need to unzip
+test = pd.read_csv(Path.cwd() / "test.csv.zip")
+train = pd.read_csv(Path.cwd() / "train.csv.zip")
+
+train.head()
+```
+
+```{python}
+# Create local validation
+validation_train, validation_test = train_test_split(train, test_size=0.3, random_state=123)
+```
+
+
+```{python}
+print(validation_train.columns)
+```
+
+# Elevation measure had quite different distributions per each class so we should start with just this one
+
+```{python}
+features_selected = ['Elevation'] #x
+target = ['Cover_Type'] #y
+X = train[features_selected]
+y = train[target]
+X_train = validation_train[features_selected]
+y_train = validation_train[target]
+X_test = validation_test[features_selected]
+y_test = validation_test[target] #switch to all 4 in one as shown elsewhere
+```
+
+```{python}
+#from sklearn.model_selection import cross_val_score
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import metrics #Import scikit-learn metrics module for accuracy calculation
+
+# Create Decision Tree classifer object
+model = DecisionTreeClassifier(random_state=0)
+
+# Train Decision Tree Classifer
+model = model.fit(X_train,y_train)
+
+#Predict the response for test dataset
+y_pred = model.predict(X_test)
+
+# Model Accuracy, how often is the classifier correct?
+print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+```
+
+* Wow pretty good for 1 variable
+
+* Apply predictions to actual test data
+
+```{python}
+submission = test.copy()
+```
+
+```{python}
+submission['Cover_Type'] = model.predict(submission[features_selected])
+```
+
+* Write to csv
+
+```{python}
+submission[['Id','Cover_Type']].to_csv('submission{0}.csv'.format(5), index=False)
+```
+
+```{bash, eval = FALSE}
+#kaggle competitions submit favorita-grocery-sales-forecasting -f sample_submission_favorita.csv.7z -m "My submission message"
+kaggle competitions submit learn-together -f submission5.csv -m "Decision Tree submission with 1 feature"
+```
+
+
+
+
+
+

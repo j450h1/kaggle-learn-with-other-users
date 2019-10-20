@@ -1,0 +1,97 @@
+---
+title: "Submission 6"
+author: "Jas Sohi"
+date: "10/20/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Random Forest
+
+https://www.datacamp.com/community/tutorials/random-forests-classifier-python#features
+
+* If we only have one feature then I expect Random Forest to have similar results to Decision Tree
+
+```{python}
+import pandas as pd
+from pathlib import Path
+from sklearn.model_selection import train_test_split
+```
+
+```{python}
+# no need to unzip
+test = pd.read_csv(Path.cwd() / "test.csv.zip")
+train = pd.read_csv(Path.cwd() / "train.csv.zip")
+
+train.head()
+```
+
+```{python}
+# Create local validation
+validation_train, validation_test = train_test_split(train, test_size=0.3, random_state=123)
+```
+
+
+```{python}
+print(validation_train.columns)
+```
+
+# Elevation measure had quite different distributions per each class so we should start with just this one
+
+```{python}
+features_selected = ['Elevation'] #x
+target = ['Cover_Type'] #y
+X = train[features_selected]
+y = train[target]
+X_train = validation_train[features_selected]
+y_train = validation_train[target]
+X_test = validation_test[features_selected]
+y_test = validation_test[target] #switch to all 4 in one as shown elsewhere
+```
+
+```{python}
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
+
+model = RandomForestClassifier(n_estimators=100, max_depth=2,
+                              random_state=0)
+model.fit(X, y)  
+```
+
+# Feature importances
+
+```{python}
+print(model.feature_importances_)
+```
+
+```{python}
+import pandas as pd
+feature_imp = pd.Series(model.feature_importances_,index=features_selected).sort_values(ascending=False)
+feature_imp
+```
+
+* Apply predictions to actual test data
+
+```{python}
+submission = test.copy()
+```
+
+```{python}
+submission['Cover_Type'] = model.predict(submission[features_selected])
+```
+
+* Write to csv
+
+```{python}
+submission[['Id','Cover_Type']].to_csv('submission{0}.csv'.format(6), index=False)
+```
+
+```{bash, eval = FALSE}
+#kaggle competitions submit favorita-grocery-sales-forecasting -f sample_submission_favorita.csv.7z -m "My submission message"
+kaggle competitions submit learn-together -f submission6.csv -m "Random forest submission with 1 feature"
+```
+
+* wow a horrible result, so it only works well with a lot of dimensions
