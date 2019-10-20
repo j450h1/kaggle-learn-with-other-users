@@ -1,0 +1,110 @@
+---
+title: "Submission 8"
+author: "Jas Sohi"
+date: "10/20/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Random Forest
+
+https://www.datacamp.com/community/tutorials/random-forests-classifier-python#features
+
+* Let's try with 10 features
+
+```{python}
+import pandas as pd
+from pathlib import Path
+from sklearn.model_selection import train_test_split
+```
+
+```{python}
+# no need to unzip
+test = pd.read_csv(Path.cwd() / "test.csv.zip")
+train = pd.read_csv(Path.cwd() / "train.csv.zip")
+
+train.head()
+```
+
+```{python}
+# Create local validation
+validation_train, validation_test = train_test_split(train, test_size=0.3, random_state=123)
+```
+
+
+```{python}
+features_selected = ['Elevation', 'Wilderness_Area4', 'Horizontal_Distance_To_Roadways', 'Soil_Type10', 'Soil_Type3',
+'Wilderness_Area1','Soil_Type38','Horizontal_Distance_To_Fire_Points','Horizontal_Distance_To_Hydrology','Soil_Type39'] #x
+target = ['Cover_Type'] #y
+X = train[features_selected]
+y = train[target]
+X_train = validation_train[features_selected]
+y_train = validation_train[target]
+X_test = validation_test[features_selected]
+y_test = validation_test[target] #switch to all 4 in one as shown elsewhere
+```
+
+
+```{python}
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
+
+model = RandomForestClassifier(n_estimators=100, max_depth=2,
+                              random_state=0)
+model.fit(X_train, y_train)  
+```
+
+```{python}
+import pandas as pd
+feature_imp = pd.Series(model.feature_importances_,index=X_train.columns).sort_values(ascending=False)
+feature_imp
+```
+
+# Visualize
+
+```{python}
+import matplotlib.pyplot as plt
+import seaborn as sns
+# Creating a bar plot
+sns.barplot(x=feature_imp, y=feature_imp.index)
+# Add labels to your graph
+plt.xlabel('Feature Importance Score')
+plt.ylabel('Features')
+plt.title("Visualizing Important Features")
+plt.legend()
+plt.show()
+```
+
+```{python}
+# prediction on test set
+y_pred = model.predict(X_test)
+
+#Import scikit-learn metrics module for accuracy calculation
+from sklearn import metrics
+# Model Accuracy, how often is the classifier correct?
+print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+```
+
+* Apply predictions to actual test data
+
+```{python}
+submission = test.copy()
+```
+
+```{python}
+submission['Cover_Type'] = model.predict(submission[features_selected])
+```
+
+* Write to csv
+
+```{python}
+submission[['Id','Cover_Type']].to_csv('submission{0}.csv'.format(8), index=False)
+```
+
+```{bash, eval = FALSE}
+#kaggle competitions submit favorita-grocery-sales-forecasting -f sample_submission_favorita.csv.7z -m "My submission message"
+kaggle competitions submit learn-together -f submission8.csv -m "Random forest submission with top 10 features"
+```
