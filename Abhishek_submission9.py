@@ -13,10 +13,10 @@ from sklearn.model_selection import train_test_split
 #Abhishek 10/28/2019, added low_memor parameter due to Memory error in concatenate chunks  and got errors
 # Zipped the files manaully and changed the file name to .zip in test and train dataset population
 
-
 test = pd.read_csv(Path.cwd() / "test.zip")
+# strange for me its test.csv.zip
 train = pd.read_csv(Path.cwd() / "train.zip")
-
+# strange for me its train.csv.zip
 
 train.head()
 
